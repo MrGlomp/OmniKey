@@ -49,13 +49,13 @@ public class Juego {
         this.tienda = tienda;
     }
 
-  @Override  
+  @Override
   public String toString(){
         return "Juego{" +
                 "titulo:'" + titulo + '\'' +
                 ", precio:'" + precio + '\'' +
-                ", urlImagen:'" + imagen + '\'' +
-                ", urlTienda:'" + tienda + '\'' +
+                ", Imagen:'" + imagen + '\'' +
+                ", Tienda:'" + tienda + '\'' +
                 '}';
     }
 }
