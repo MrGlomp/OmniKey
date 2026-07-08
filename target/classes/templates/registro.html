@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Terminal — OmniKey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-glow:   #0D0F14;
+            --panel:     #161B27;
+            --outline:   #252D42;
+            --neon-cyan: #00E5FF;
+            --neon-red:  #FF4560;
+            --text-main: #E8ECF0;
+            --text-dark: #6B7A99;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-glow);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            height: 64px;
+            border-bottom: 1px solid var(--outline);
+            background: rgba(13, 15, 20, 0.85);
+            backdrop-filter: blur(16px);
+            position: fixed;
+            top: 0; width: 100%; z-index: 50;
+        }
+
+        .brand {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .brand em { color: var(--neon-cyan); font-style: normal; }
+        .brand-node {
+            width: 6px; height: 6px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 1.5rem 2rem;
+            position: relative;
+        }
+
+        main::after {
+            content: '';
+            position: absolute;
+            width: 450px; height: 450px;
+            background: radial-gradient(circle, rgba(0,229,255,0.035) 0%, transparent 75%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .auth-container {
+            background: var(--panel);
+            border: 1.5px solid var(--outline);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            z-index: 5;
+            transition: border-color 0.3s;
+        }
+        .auth-container:hover {
+            border-color: rgba(0, 229, 255, 0.25);
+        }
+
+        .auth-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-head h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .auth-head p {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .field-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .field-group input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 1.2rem;
+            background: rgba(13, 15, 20, 0.6);
+            border: 1.5px solid var(--outline);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .field-group input:focus {
+            border-color: var(--neon-cyan);
+            background: rgba(13, 15, 20, 0.9);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.08);
+        }
+
+        .action-trigger {
+            width: 100%;
+            padding: 0.9rem;
+            background: rgba(0, 229, 255, 0.08);
+            color: var(--neon-cyan);
+            border: 1.5px solid rgba(0, 229, 255, 0.4);
+            border-radius: 12px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-trigger:hover {
+            background: var(--neon-cyan);
+            color: #030508;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+        }
+
+        .switch-nexus {
+            text-align: center;
+            margin-top: 1.75rem;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+        }
+
+        .action-link {
+            background: none;
+            border: none;
+            color: var(--neon-cyan);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0; margin: 0 0 0 0.25rem;
+            outline: none;
+        }
+        .action-link:hover { text-decoration: underline; }
+
+        .alert-terminal {
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        .alert-terminal.active { display: block; }
+
+        .alert-terminal.failure {
+            background: rgba(255, 69, 96, 0.06);
+            border: 1px solid rgba(255, 69, 96, 0.25);
+            color: var(--neon-red);
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 4px);
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand"><span class="brand-node"></span>Omni<em>Key</em></div>
+</header>
+
+<main>
+    <div class="auth-container">
+        <div class="auth-head">
+            <h1>Bienvenido</h1>
+            <p>Crea un perfil de usuario</p>
+        </div>
+
+        <div id="alertRegisterError" class="alert-terminal failure">
+            <span id="errorText">El usuario ya se encuentra registrado.</span>
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                const errorBackend = null;
+
+                if (errorBackend && errorBackend.trim() !== "") {
+                    document.getElementById('errorText').innerText = errorBackend;
+                    document.getElementById('alertRegisterError').classList.add('active');
+                }
+            });
+        </script>
+
+        <form th:action="@{/registro}" method="post">
+            <div class="field-group">
+                <input type="text" name="username" placeholder="Nombre de usuario" required autocomplete="username"/>
+            </div>
+            <div class="field-group">
+                <input type="email" name="email" placeholder="Correo electrónico" required autocomplete="email"/>
+            </div>
+            <div class="field-group">
+                <input type="password" name="password" placeholder="Contraseña" required autocomplete="new-password"/>
+            </div>
+            <button type="submit" class="action-trigger">Registrar</button>
+        </form>
+
+        <div class="switch-nexus">
+            ¿Ya tienes una cuenta? <button type="button" class="action-link" onclick="window.location.href='/login'">Iniciar sesión</button>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
